@@ -1,0 +1,17 @@
+services:
+  app:
+    build: .
+    container_name: yolov11_training
+    volumes:
+      - .:/app
+      - ./datasets:/datasets
+      - ./ultralytics_files/runs:/ultralytics/runs
+      - ./ultralytics_files/weights:/ultralytics/weights
+    stdin_open: true # -i
+    tty: true # -t
+    ipc: host # --ipc=host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu] # --gpus all

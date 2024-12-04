@@ -1,21 +1,31 @@
 import os
 from ultralytics import YOLO
 
-EPOCH = 2
-IMAGE_SIZE = 640
 
-model = YOLO("yolo11m.pt")
+def train_yolo(epoch, image_size, batch_size, model_path, data_path):
+    model = YOLO(model_path)
 
-# Train the model
-train_results = model.train(
-    data="dataset/data.yaml",
-    epochs=EPOCH,  # number of training epochs
-    imgsz=IMAGE_SIZE,  # training image size
-    device=0,  # device to run on, i.e. device=0 or device=0,1,2,3 or device=cpu
-)
+    # Train the model
+    train_results = model.train(
+        data=data_path,
+        epochs=epoch,
+        imgsz=image_size,
+        batch=batch_size,
+        cache=False,
+    )
 
-# Evaluate model performance on the validation set
-metrics = model.val()
+    # Evaluate model performance on the validation set
+    metrics = model.val()
 
-# Export the model to ONNX format
-path = model.export(format="onnx")  # return path to exported model
+    # Export the model to ONNX format
+    path = model.export(format="onnx")  # return path to exported model
+
+    return path
+
+
+if __name__ == "__main__":
+    EPOCH = 1
+    IMAGE_SIZE = 640
+    BATCH_SIZE = 4
+    model_path = train_yolo(EPOCH, IMAGE_SIZE, BATCH_SIZE, "yolo11m.pt", "datasets/data.yaml")
+    print(f"Model saved at {model_path}")
